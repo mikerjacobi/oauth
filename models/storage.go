@@ -1,11 +1,19 @@
 package models
 
-import "github.com/RangelReale/osin"
+import (
+	"database/sql"
 
-type Storage struct{}
+	"github.com/RangelReale/osin"
+)
 
-func NewStorage() *Storage {
-	return &Storage{}
+type Storage struct {
+	DB *sql.DB
+}
+
+func NewStorage(db *sql.DB) *Storage {
+	return &Storage{
+		DB: db,
+	}
 }
 
 // Clone the storage if needed. For example, using mgo, you can clone the session with session.Clone

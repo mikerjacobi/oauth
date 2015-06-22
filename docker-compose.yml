@@ -1,0 +1,15 @@
+app:
+  build: .
+  ports:
+   - "8002:8000"
+  volumes:
+   - /etc/ssl:/etc/ssl
+   - oauth:/oauth
+   - config.json:/config.json
+  links:
+   - redis
+   - postgres 
+redis:
+  image: redis
+postgres:
+  image: postgres

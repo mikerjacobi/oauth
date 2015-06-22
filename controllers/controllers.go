@@ -1,21 +1,25 @@
 package controllers
 
 import (
-	"net/http"
+	"database/sql"
 
 	"github.com/RangelReale/osin"
-	log "github.com/Sirupsen/logrus"
 	"github.com/gocraft/web"
 )
 
 type AuthContext struct {
 	osin.Server
-	Name string
+	DB *sql.DB
+}
+
+func (c *AuthContext) HealthCheckHandler(w web.ResponseWriter, r *web.Request) {
+	resp := c.NewResponse()
+	defer resp.Close()
+	resp.Output["hello"] = "world"
+	osin.OutputJSON(resp, w, r.Request)
 }
 
 func (c *AuthContext) AuthorizeHandler(w web.ResponseWriter, r *web.Request) {
-	log.Error(r.Request)
-
 	resp := c.NewResponse()
 	defer resp.Close()
 
@@ -30,17 +34,12 @@ func (c *AuthContext) AuthorizeHandler(w web.ResponseWriter, r *web.Request) {
 }
 
 func (c *AuthContext) TokenHandler(w web.ResponseWriter, r *web.Request) {
-	req, err := http.NewRequest(r.Method, r.RoutePath(), r.Body)
-	if err != nil {
-		log.Panic("failed to convert web.Request into http.Request")
-	}
-
 	resp := c.NewResponse()
 	defer resp.Close()
 
-	if ar := c.HandleAccessRequest(resp, req); ar != nil {
+	if ar := c.HandleAccessRequest(resp, r.Request); ar != nil {
 		ar.Authorized = true
-		c.FinishAccessRequest(resp, req, ar)
+		c.FinishAccessRequest(resp, r.Request, ar)
 	}
-	osin.OutputJSON(resp, w, req)
+	osin.OutputJSON(resp, w, r.Request)
 }

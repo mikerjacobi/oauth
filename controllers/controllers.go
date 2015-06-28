@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/RangelReale/osin"
+	log "github.com/Sirupsen/logrus"
 	"github.com/gocraft/web"
 )
 
@@ -20,6 +21,7 @@ func (c *AuthContext) HealthCheckHandler(w web.ResponseWriter, r *web.Request) {
 }
 
 func (c *AuthContext) AuthorizeHandler(w web.ResponseWriter, r *web.Request) {
+	log.Error("In Auth Handler")
 	resp := c.NewResponse()
 	defer resp.Close()
 
@@ -34,6 +36,7 @@ func (c *AuthContext) AuthorizeHandler(w web.ResponseWriter, r *web.Request) {
 }
 
 func (c *AuthContext) TokenHandler(w web.ResponseWriter, r *web.Request) {
+	log.Error("In Token Handler")
 	resp := c.NewResponse()
 	defer resp.Close()
 

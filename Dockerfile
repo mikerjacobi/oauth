@@ -1,5 +1,5 @@
 FROM debian:latest
-EXPOSE 8000
+EXPOSE 80
 
 ADD oauth /oauth
 

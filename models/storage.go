@@ -32,7 +32,7 @@ func (s *Storage) GetClient(id string) (osin.Client, error) {
 	c := Client{
 		Id:          "1234",
 		Secret:      "secret yo",
-		RedirectUri: "https://www.google.com",
+		RedirectUri: "http://www.jacobra.com:8002/token",
 	}
 	return c, nil
 }

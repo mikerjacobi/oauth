@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/RangelReale/osin"
+	"github.com/Sirupsen/logrus"
 )
 
 type Storage struct {
@@ -29,12 +30,17 @@ func (s *Storage) Close() {}
 
 // GetClient loads the client by id (client_id)
 func (s *Storage) GetClient(id string) (osin.Client, error) {
-	c := Client{
-		Id:          "1234",
-		Secret:      "secret yo",
-		RedirectUri: "http://www.jacobra.com:8002/token",
+	var client Client
+	logrus.Info("start get client")
+	err := s.DB.QueryRow("SELECT * FROM clients WHERE client_id = $1", id).Scan(
+		&client.Id, &client.Secret, &client.RedirectUri)
+
+	if err != nil {
+		logrus.Infof("error get client: %s", err.Error())
+		return client, err
 	}
-	return c, nil
+	logrus.Info("finish get client")
+	return client, nil
 }
 
 // SaveAuthorize saves authorize data.

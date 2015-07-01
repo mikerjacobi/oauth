@@ -6,6 +6,6 @@
     },
     "postgres":{
         "user":"postgres",
-        "host_env_var":"POSTGRES_PORT_5432_TCP_ADDR"
+        "host_env_var":"OAUTHDATA_PORT_5432_TCP_ADDR"
     }
 }

@@ -26,11 +26,13 @@ func (c *AuthContext) AuthorizeHandler(w web.ResponseWriter, r *web.Request) {
 	defer resp.Close()
 
 	if ar := c.HandleAuthorizeRequest(resp, r.Request); ar != nil {
+		log.Info("Finishing Auth Request")
 
 		// HANDLE LOGIN PAGE HERE
 
 		ar.Authorized = true
 		c.FinishAuthorizeRequest(resp, r.Request, ar)
+		log.Info("Finished Auth Request...")
 	}
 	osin.OutputJSON(resp, w, r.Request)
 }

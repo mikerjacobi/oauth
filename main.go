@@ -34,7 +34,8 @@ func main() {
 	viper.BindEnv(postgresHostVar)
 	host := viper.Get(postgresHostVar)
 	user := viper.GetStringMapString("postgres")["user"]
-	conn := fmt.Sprintf("postgres://%s@%s/pqgotest?sslmode=verify-full", user, host)
+	log.Infof("dbhost: %s", host)
+	conn := fmt.Sprintf("postgres://%s@%s/accounts?sslmode=disable", user, host)
 
 	db, err := sql.Open("postgres", conn)
 	if err != nil {

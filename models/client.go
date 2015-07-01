@@ -1,9 +1,9 @@
 package models
 
 type Client struct {
-	Id          string
-	Secret      string
-	RedirectUri string
+	Id          string `db:"client_id"`
+	Secret      string `db:"client_secret"`
+	RedirectUri string `db:"redirect_uri"`
 	UserData    interface{}
 }
 

@@ -34,7 +34,6 @@ func (s *Storage) GetClient(id string) (osin.Client, error) {
 	logrus.Info("start get client")
 	err := s.DB.QueryRow("SELECT * FROM clients WHERE client_id = $1", id).Scan(
 		&client.Id, &client.Secret, &client.RedirectUri)
-
 	if err != nil {
 		logrus.Infof("error get client: %s", err.Error())
 		return client, err
@@ -44,16 +43,45 @@ func (s *Storage) GetClient(id string) (osin.Client, error) {
 }
 
 // SaveAuthorize saves authorize data.
-func (s *Storage) SaveAuthorize(*osin.AuthorizeData) error {
+func (s *Storage) SaveAuthorize(data *osin.AuthorizeData) error {
+	logrus.Infof("save auth")
+	logrus.Info(data)
+	stmt := "INSERT INTO authorized_data(code,client_id,expires_in,state,created) VALUES ($1,$2,$3,$4,now())"
+	_, err := s.DB.Exec(stmt, data.Code, data.Client.GetId(), 99999, data.State)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // LoadAuthorize looks up AuthorizeData by a code.
 // Client information MUST be loaded together.
 // Optionally can return error if expired.
+
+/*
+CREATE TABLE authorized_data (
+    code            varchar(22) PRIMARY KEY,
+    client_id       varchar(36) NOT NULL,
+    expires_in      integer NOT NULL,
+    state           varchar(20),
+    created         date
+);
+
+*/
 func (s *Storage) LoadAuthorize(code string) (*osin.AuthorizeData, error) {
-	data := osin.AuthorizeData{}
-	return &data, nil
+	logrus.Infof("load auth: %s", code)
+	c := Client{}
+	err := s.DB.QueryRow("SELECT * FROM authorized_data WHERE code = $1", code).Scan(
+		&c.Code, &c.Id, &c.ExpiresIn, &c.State, &c.Created)
+	c.RedirectUri = "http://www.jacobra.com:8003/oauth2callback"
+	if err != nil {
+		logrus.Infof("error get client: %s", err.Error())
+		return &osin.AuthorizeData{}, err
+	}
+	oad := c.ToOsinAuthorizeData()
+	logrus.Infof("loaded auth: %d, %s", oad.ExpiresIn, oad.CreatedAt)
+	logrus.Infof("loaded client: %d", c.ExpiresIn)
+	return &oad, nil
 }
 
 // RemoveAuthorize revokes or deletes the authorization code.

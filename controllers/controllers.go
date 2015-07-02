@@ -47,4 +47,5 @@ func (c *AuthContext) TokenHandler(w web.ResponseWriter, r *web.Request) {
 		c.FinishAccessRequest(resp, r.Request, ar)
 	}
 	osin.OutputJSON(resp, w, r.Request)
+	log.Info("Finished token Request...")
 }

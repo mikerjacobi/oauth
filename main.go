@@ -51,7 +51,7 @@ func main() {
 	context := controllers.AuthContext{*server, db}
 	router := web.New(context).
 		Get("/authorize", context.AuthorizeHandler).
-		Get("/token", context.TokenHandler).
+		Post("/token", context.TokenHandler).
 		Get("/healthcheck", context.HealthCheckHandler)
 
 	port := viper.GetString("server_port")

@@ -15,6 +15,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+func corsMiddleware(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
+	rw.Header().Add("Access-Control-Allow-Origin", "*")
+	next(rw, req)
+}
+
 func main() {
 	var (
 		config     string
@@ -34,7 +39,6 @@ func main() {
 	viper.BindEnv(postgresHostVar)
 	host := viper.Get(postgresHostVar)
 	user := viper.GetStringMapString("postgres")["user"]
-	log.Infof("dbhost: %s", host)
 	conn := fmt.Sprintf("postgres://%s@%s/accounts?sslmode=disable", user, host)
 
 	db, err := sql.Open("postgres", conn)
@@ -50,7 +54,9 @@ func main() {
 
 	context := controllers.AuthContext{*server, db}
 	router := web.New(context).
+		Middleware(corsMiddleware).
 		Get("/authorize", context.AuthorizeHandler).
+		Post("/authorize", context.AuthorizeHandler).
 		Post("/token", context.TokenHandler).
 		Get("/healthcheck", context.HealthCheckHandler)
 
